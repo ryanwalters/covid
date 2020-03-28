@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import fetch from "node-fetch";
 import Head from "next/head";
 import {
+  Hint,
   HorizontalGridLines,
   LineSeries,
   VerticalGridLines,
@@ -12,11 +13,24 @@ import {
 } from "react-vis";
 import { Navbar } from "reactstrap";
 
-function transformData(data) {
+function transformCumulativeData(data) {
   return data.map(({ dateChecked, positive: y }) => ({
     x: dayjs(dateChecked),
     y,
   }));
+}
+
+function transformDayOverDay(data) {
+  return data.map(({ dateChecked, positiveIncrease: y }) => ({
+    x: dayjs(dateChecked),
+    y,
+  }));
+}
+
+function transformPositiveHints(data) {
+  console.log(data);
+  return data.map(({ positive: value }) => ({ label: "Positive", value }));
+  //return data.map(({ positive: value }) => ({ value }));
 }
 
 const Home = ({ data }) => {
@@ -42,8 +56,9 @@ const Home = ({ data }) => {
       <Head>
         <title>US COVID-19 Cases</title>
       </Head>
-      <Navbar>US COVID-19 Cases</Navbar>
+      <Navbar color="dark">US COVID-19 Cases</Navbar>
       <div className="container" ref={containerRef}>
+        <h3 className="mt-3">Cumulative</h3>
         <XYPlot width={width} height={400} margin={{ left: 50 }}>
           <VerticalGridLines />
           <HorizontalGridLines />
@@ -51,9 +66,19 @@ const Home = ({ data }) => {
             title="Date"
             tickFormat={(tick) => dayjs(tick).format("MMM D")}
           />
-          <YAxis title="Confirmed Cases" />
-          <LineSeries data={transformData(data)} />
+          <YAxis title="Total Confirmed Cases" />
+          <LineSeries data={transformCumulativeData(data)} curve="curveBasis" />
+          {/*<Hint value={data} format={transformPositiveHints} />*/}
         </XYPlot>
+        <h3 className="mt-3">Day-over-day</h3>
+        <XYPlot width={width} height={400} margin={{ left: 50 }}>
+          <VerticalGridLines />
+          <HorizontalGridLines />
+          <XAxis tickFormat={(tick) => dayjs(tick).format("MMM D")} />
+          <YAxis title="New Confirmed Cases" />
+          <LineSeries data={transformDayOverDay(data)} curve="curveBasis" />
+        </XYPlot>
+        {/*<pre>{JSON.stringify(data, null, 2)}</pre>*/}
       </div>
     </div>
   );
