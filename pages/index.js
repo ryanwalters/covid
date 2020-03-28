@@ -71,13 +71,14 @@ const Home = ({ data }) => {
         {/* Cumulative */}
 
         <h3 className="mt-3">Cumulative</h3>
+        <div className="font-weight-light">Total number of confirmed cases</div>
         <XYPlot width={width} height={400} margin={{ left: 50 }}>
           <HorizontalGridLines style={{ opacity: 0.1 }} />
           <XAxis
             title="Date"
             tickFormat={(tick) => dayjs(tick).format("MMM D")}
           />
-          <YAxis title="Total Confirmed Cases" />
+          <YAxis title="Total Cases" />
           <LineSeries
             data={transformCumulativeData(data)}
             curve="curveBasis"
@@ -93,13 +94,16 @@ const Home = ({ data }) => {
         {/* Day-over-day */}
 
         <h3 className="mt-3">Day-over-day</h3>
+        <div className="font-weight-light">
+          New confirmed cases since the previous day
+        </div>
         <XYPlot width={width} height={400} margin={{ left: 50 }}>
           <HorizontalGridLines style={{ opacity: 0.1 }} />
           <XAxis
             title="Date"
             tickFormat={(tick) => dayjs(tick).format("MMM D")}
           />
-          <YAxis title="New Confirmed Cases" />
+          <YAxis title="New Cases" />
           <LineSeries data={transformDayOverDay(data)} curve="curveBasis" />
         </XYPlot>
         {/*<pre>{JSON.stringify(data, null, 2)}</pre>*/}
