@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import fetch from "node-fetch";
 import Head from "next/head";
 import {
+  Crosshair,
   Hint,
   HorizontalGridLines,
   LineSeries,
@@ -36,6 +37,7 @@ function transformPositiveHints(data) {
 const Home = ({ data }) => {
   const containerRef = useRef(null);
   const [width, setWidth] = useState(0);
+  const [crosshair, setCrosshair] = useState(null);
 
   useEffect(() => {
     let resizeObserver;
@@ -51,30 +53,52 @@ const Home = ({ data }) => {
     return () => resizeObserver.unobserve(containerRef.current);
   }, [containerRef.current]);
 
+  function onNearestX(value) {
+    setCrosshair(value);
+  }
+
+  function onNearestY(value, { index }) {
+    console.log(value, index);
+  }
+
   return (
     <div>
       <Head>
         <title>US COVID-19 Cases</title>
       </Head>
       <Navbar color="dark">US COVID-19 Cases</Navbar>
-      <div className="container" ref={containerRef}>
+      <div className="container mb-5" ref={containerRef}>
+        {/* Cumulative */}
+
         <h3 className="mt-3">Cumulative</h3>
         <XYPlot width={width} height={400} margin={{ left: 50 }}>
-          <VerticalGridLines />
-          <HorizontalGridLines />
+          <HorizontalGridLines style={{ opacity: 0.1 }} />
           <XAxis
             title="Date"
             tickFormat={(tick) => dayjs(tick).format("MMM D")}
           />
           <YAxis title="Total Confirmed Cases" />
-          <LineSeries data={transformCumulativeData(data)} curve="curveBasis" />
-          {/*<Hint value={data} format={transformPositiveHints} />*/}
+          <LineSeries
+            data={transformCumulativeData(data)}
+            curve="curveBasis"
+            onNearestX={onNearestX}
+            onNearestY={onNearestY}
+          >
+            {(hoveredCell) => console.log(hoveredCell)}
+          </LineSeries>
+          {/*<Crosshair values={data} itemsFormat={items => items.map(({ positive: value }) => ({ value }))} />*/}
+          {/*<Hint value={data} format={items => items.map(item => ({ title: dayjs(item.dateChecked).format('MMM D'), value: item.positive }))} />*/}
         </XYPlot>
+
+        {/* Day-over-day */}
+
         <h3 className="mt-3">Day-over-day</h3>
         <XYPlot width={width} height={400} margin={{ left: 50 }}>
-          <VerticalGridLines />
-          <HorizontalGridLines />
-          <XAxis tickFormat={(tick) => dayjs(tick).format("MMM D")} />
+          <HorizontalGridLines style={{ opacity: 0.1 }} />
+          <XAxis
+            title="Date"
+            tickFormat={(tick) => dayjs(tick).format("MMM D")}
+          />
           <YAxis title="New Confirmed Cases" />
           <LineSeries data={transformDayOverDay(data)} curve="curveBasis" />
         </XYPlot>
