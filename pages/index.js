@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import React, { useEffect, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import fetch from "node-fetch";
 import Head from "next/head";
 import {
@@ -34,7 +34,7 @@ const Home = ({ data, graphs }) => {
   }, [containerRef.current]);
 
   function onNearestXY(value, data) {
-    console.log(value, data);
+    //console.log(value, data);
   }
 
   function transformData(data) {
@@ -52,7 +52,7 @@ const Home = ({ data, graphs }) => {
       <Navbar color="dark">US COVID-19 Cases</Navbar>
       <div className="container mb-5" ref={containerRef}>
         {graphs.map(({ heading, subHeading, yLabel, data }) => (
-          <>
+          <Fragment key={heading}>
             <h3 className="mt-3">{heading}</h3>
             <div className="font-weight-light">{subHeading}</div>
             <XYPlot width={width} height={400} margin={{ left: 60 }}>
@@ -70,9 +70,11 @@ const Home = ({ data, graphs }) => {
               {/*<Crosshair values={data} itemsFormat={items => items.map(({ positive: value }) => ({ value }))} />*/}
               {/*<Hint value={data} format={items => items.map(item => ({ title: dayjs(item.dateChecked).format('MMM D'), value: item.positive }))} />*/}
             </XYPlot>
-          </>
+          </Fragment>
         ))}
-        <pre>{JSON.stringify(data, null, 2)}</pre>
+        {process.env.NODE_ENV !== "production" && (
+          <pre>{JSON.stringify(data, null, 2)}</pre>
+        )}
       </div>
     </div>
   );
