@@ -14,27 +14,7 @@ import {
 } from "react-vis";
 import { Navbar } from "reactstrap";
 
-function transformCumulativeData(data) {
-  return data.map(({ dateChecked, positive: y }) => ({
-    x: dayjs(dateChecked),
-    y,
-  }));
-}
-
-function transformDayOverDay(data) {
-  return data.map(({ dateChecked, positiveIncrease: y }) => ({
-    x: dayjs(dateChecked),
-    y,
-  }));
-}
-
-function transformPositiveHints(data) {
-  console.log(data);
-  return data.map(({ positive: value }) => ({ label: "Positive", value }));
-  //return data.map(({ positive: value }) => ({ value }));
-}
-
-const Home = ({ data }) => {
+const Home = ({ data, graphs }) => {
   const containerRef = useRef(null);
   const [width, setWidth] = useState(0);
   const [crosshair, setCrosshair] = useState(null);
@@ -53,12 +33,15 @@ const Home = ({ data }) => {
     return () => resizeObserver.unobserve(containerRef.current);
   }, [containerRef.current]);
 
-  function onNearestX(value) {
-    setCrosshair(value);
+  function onNearestXY(value, data) {
+    console.log(value, data);
   }
 
-  function onNearestY(value, { index }) {
-    console.log(value, index);
+  function transformData(data) {
+    return data.map((item) => ({
+      ...item,
+      x: dayjs(item.x),
+    }));
   }
 
   return (
@@ -68,56 +51,56 @@ const Home = ({ data }) => {
       </Head>
       <Navbar color="dark">US COVID-19 Cases</Navbar>
       <div className="container mb-5" ref={containerRef}>
-        {/* Cumulative */}
-
-        <h3 className="mt-3">Cumulative</h3>
-        <div className="font-weight-light">Total number of confirmed cases</div>
-        <XYPlot width={width} height={400} margin={{ left: 50 }}>
-          <HorizontalGridLines style={{ opacity: 0.1 }} />
-          <XAxis
-            title="Date"
-            tickFormat={(tick) => dayjs(tick).format("MMM D")}
-          />
-          <YAxis title="Total Cases" />
-          <LineSeries
-            data={transformCumulativeData(data)}
-            curve="curveBasis"
-            onNearestX={onNearestX}
-            onNearestY={onNearestY}
-          >
-            {(hoveredCell) => console.log(hoveredCell)}
-          </LineSeries>
-          {/*<Crosshair values={data} itemsFormat={items => items.map(({ positive: value }) => ({ value }))} />*/}
-          {/*<Hint value={data} format={items => items.map(item => ({ title: dayjs(item.dateChecked).format('MMM D'), value: item.positive }))} />*/}
-        </XYPlot>
-
-        {/* Day-over-day */}
-
-        <h3 className="mt-3">Day-over-day</h3>
-        <div className="font-weight-light">
-          New confirmed cases since the previous day
-        </div>
-        <XYPlot width={width} height={400} margin={{ left: 50 }}>
-          <HorizontalGridLines style={{ opacity: 0.1 }} />
-          <XAxis
-            title="Date"
-            tickFormat={(tick) => dayjs(tick).format("MMM D")}
-          />
-          <YAxis title="New Cases" />
-          <LineSeries data={transformDayOverDay(data)} curve="curveBasis" />
-        </XYPlot>
-        {/*<pre>{JSON.stringify(data, null, 2)}</pre>*/}
+        {graphs.map(({ heading, subHeading, yLabel, data }) => (
+          <>
+            <h3 className="mt-3">{heading}</h3>
+            <div className="font-weight-light">{subHeading}</div>
+            <XYPlot width={width} height={400} margin={{ left: 60 }}>
+              <HorizontalGridLines style={{ opacity: 0.1 }} />
+              <XAxis
+                title="Date"
+                tickFormat={(tick) => dayjs(tick).format("MMM D")}
+              />
+              <YAxis title={yLabel} />
+              <LineSeries
+                data={transformData(data)}
+                curve="curveBasis"
+                onNearestXY={onNearestXY}
+              />
+              {/*<Crosshair values={data} itemsFormat={items => items.map(({ positive: value }) => ({ value }))} />*/}
+              {/*<Hint value={data} format={items => items.map(item => ({ title: dayjs(item.dateChecked).format('MMM D'), value: item.positive }))} />*/}
+            </XYPlot>
+          </>
+        ))}
+        <pre>{JSON.stringify(data, null, 2)}</pre>
       </div>
     </div>
   );
 };
 
 export async function getServerSideProps(context) {
+  const data = await fetch(
+    "https://covidtracking.com/api/us/daily"
+  ).then((response) => response.json());
+  const graphs = [
+    {
+      heading: "Cumulative",
+      subHeading: "Total number of confirmed cases",
+      yLabel: "Total Cases",
+      data: data.map(({ dateChecked: x, positive: y }) => ({ x, y })),
+    },
+    {
+      heading: "Day-over-day",
+      subHeading: "New confirmed cases since the previous day",
+      yLabel: "New Cases",
+      data: data.map(({ dateChecked: x, positiveIncrease: y }) => ({ x, y })),
+    },
+  ];
+
   return {
     props: {
-      data: await fetch(
-        "https://covidtracking.com/api/us/daily"
-      ).then((response) => response.json()),
+      data,
+      graphs,
     },
   };
 }
