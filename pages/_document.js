@@ -11,6 +11,8 @@ class MyDocument extends Document {
     return (
       <Html lang="en-us">
         <Head>
+          <link rel="preconnect" href="https://fonts.gstatic.com" />
+          <link rel="preconnect" href="https://www.google-analytics.com" />
           <script async src="https://www.googletagmanager.com/gtag/js?id=UA-998540-9" />
           <script
             dangerouslySetInnerHTML={{
