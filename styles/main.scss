@@ -1,17 +1,23 @@
-@import url("https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
+
+// Global styles
 
 h3 {
-  font-family: "Playfair Display", serif;
+  font-family: 'Playfair Display', serif;
+}
+
+.rv-discrete-color-legend-item {
+  padding: 0 !important;
 }
 
 // Variable overrides
 
 // Bootstrap defaults
 
-@import "~bootswatch/dist/darkly/variables";
-@import "~bootstrap/scss/bootstrap";
-@import "~bootswatch/dist/darkly/bootswatch";
+@import '~bootswatch/dist/darkly/variables';
+@import '~bootstrap/scss/bootstrap';
+@import '~bootswatch/dist/darkly/bootswatch';
 
 // react-vis
 
-@import "~react-vis/dist/style";
+@import '~react-vis/dist/style';
