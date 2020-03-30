@@ -1,15 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
 
-// Global styles
-
-h3 {
-  font-family: 'Playfair Display', serif;
-}
-
-.rv-discrete-color-legend-item {
-  padding: 0 !important;
-}
-
 // Variable overrides
 
 // Bootstrap defaults
@@ -21,3 +11,17 @@ h3 {
 // react-vis
 
 @import '~react-vis/dist/style';
+
+// Global styles
+
+h3 {
+  font-family: 'Playfair Display', serif;
+}
+
+.rv-discrete-color-legend-item {
+  padding: 0 !important;
+
+  &__title {
+    color: $light;
+  }
+}

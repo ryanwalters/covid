@@ -1,5 +1,5 @@
-import React from "react";
-import Document, { Html, Head, Main, NextScript } from "next/document";
+import React from 'react';
+import Document, { Html, Head, Main, NextScript } from 'next/document';
 
 class MyDocument extends Document {
   static async getInitialProps(ctx) {
@@ -9,12 +9,9 @@ class MyDocument extends Document {
 
   render() {
     return (
-      <Html>
+      <Html lang="en-us">
         <Head>
-          <script
-            async
-            src="https://www.googletagmanager.com/gtag/js?id=UA-998540-9"
-          />
+          <script async src="https://www.googletagmanager.com/gtag/js?id=UA-998540-9" />
           <script
             dangerouslySetInnerHTML={{
               __html: `window.dataLayer = window.dataLayer || [];
