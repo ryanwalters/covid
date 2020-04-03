@@ -30,3 +30,7 @@ h3 {
 .rv-xy-plot__axis__title text {
   font-size: 12px;
 }
+
+.nav-link:not(.active) {
+  cursor: pointer;
+}
