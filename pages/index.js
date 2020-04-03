@@ -1,5 +1,4 @@
 import classnames from 'classnames';
-import dayjs from 'dayjs';
 import cookie from 'js-cookie';
 import React, { useEffect, useRef, useState } from 'react';
 import fetch from 'node-fetch';
@@ -15,7 +14,7 @@ function mapDataToGraphs(data) {
   return [
     {
       heading: 'Cumulative',
-      subHeading: `Total number of cases (${data.state || 'US'})`,
+      subHeading: `Total number of cases (${data[0].state || 'US'})`,
       yLabel: 'Total Cases',
       positive: data.map(({ dateChecked: x, positive: y = 0 }) => ({ x, y })),
       hospitalized: data.map(({ dateChecked: x, hospitalizedCumulative: y = 0 }) => ({ x, y })),
@@ -23,7 +22,7 @@ function mapDataToGraphs(data) {
     },
     {
       heading: 'Day-over-day',
-      subHeading: `New cases since the previous day (${data.state || 'US'})`,
+      subHeading: `New cases since the previous day (${data[0].state || 'US'})`,
       yLabel: 'New Cases',
       positive: data.map(({ dateChecked: x, positiveIncrease: y = 0 }) => ({ x, y })),
       hospitalized: data.map(({ dateChecked: x, hospitalizedIncrease: y = 0 }) => ({ x, y })),
