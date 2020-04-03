@@ -1,14 +1,49 @@
-import dayjs from 'dayjs';
-import React, { Fragment, useEffect, useRef, useState } from 'react';
+import classnames from 'classnames';
+import { parseCookies, setCookie } from 'nookies';
+import React, { useEffect, useRef, useState } from 'react';
 import fetch from 'node-fetch';
 import Head from 'next/head';
-import { Crosshair, DiscreteColorLegend, HorizontalGridLines, LineSeries, XAxis, XYPlot, YAxis } from 'react-vis';
-import { Navbar } from 'reactstrap';
+import { Col, FormGroup, Input, Label, Nav, Navbar, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
+import Graphs from '../components/Graphs';
 
-const Home = ({ data, graphs }) => {
+function mapDataToGraphs(data) {
+  if (!data) {
+    return [];
+  }
+
+  return [
+    {
+      heading: 'Cumulative',
+      subHeading: `Total number of cases (${data[0].state || 'US'})`,
+      yLabel: 'Total Cases',
+      positive: data.map(({ dateChecked: x, positive: y = 0 }) => ({ x, y })),
+      hospitalized: data.map(({ dateChecked: x, hospitalizedCumulative: y = 0 }) => ({ x, y })),
+      death: data.map(({ dateChecked: x, death: y = 0 }) => ({ x, y })),
+    },
+    {
+      heading: 'Day-over-day',
+      subHeading: `New cases since the previous day (${data[0].state || 'US'})`,
+      yLabel: 'New Cases',
+      positive: data.map(({ dateChecked: x, positiveIncrease: y = 0 }) => ({ x, y })),
+      hospitalized: data.map(({ dateChecked: x, hospitalizedIncrease: y = 0 }) => ({ x, y })),
+      death: data.map(({ dateChecked: x, deathIncrease: y = 0 }) => ({ x, y })),
+    },
+  ];
+}
+
+const Tab = {
+  US: 'us',
+  STATES: 'states',
+};
+
+const Home = ({ countryData, statesData, countryGraphs, states, preferences }) => {
   const containerRef = useRef(null);
   const [width, setWidth] = useState(0);
-  const [crosshair, setCrosshair] = useState([]);
+  const [activeTab, setActiveTab] = useState(preferences.tab || Tab.US);
+  const [selectedState, setSelectedState] = useState(preferences.state || states[0]);
+  const [selectedStateData, setSelectedStateData] = useState(statesData.filter(({ state }) => state === selectedState));
+
+  // Resize the graph when the container width changes
 
   useEffect(() => {
     let resizeObserver;
@@ -24,15 +59,24 @@ const Home = ({ data, graphs }) => {
     return () => resizeObserver.unobserve(containerRef.current);
   }, [containerRef.current]);
 
-  function onNearestX(value, data) {
-    console.log(value, data);
-  }
+  // Save selected state in a cookie
 
-  function transformData(data) {
-    return data.map((item) => ({
-      ...item,
-      x: dayjs(item.x),
-    }));
+  useEffect(() => {
+    setCookie(null, 'state', selectedState);
+
+    setSelectedStateData(statesData.filter(({ state }) => state === selectedState));
+  }, [selectedState]);
+
+  // Save active tab in cookie
+
+  useEffect(() => {
+    setCookie(null, 'tab', activeTab);
+  }, [activeTab]);
+
+  function handleOnChange(event) {
+    if (event.target.value) {
+      setSelectedState(event.target.value);
+    }
   }
 
   return (
@@ -41,54 +85,95 @@ const Home = ({ data, graphs }) => {
         <title>US COVID-19 Cases</title>
       </Head>
       <Navbar color="dark">US COVID-19 Cases</Navbar>
-      <div className="container mb-5" ref={containerRef}>
-        {graphs.map(({ heading, subHeading, yLabel, positive, hospitalized, death }) => (
-          <Fragment key={heading}>
-            <h3 className="mt-3">{heading}</h3>
-            <div className="font-weight-light">{subHeading}</div>
-            <XYPlot width={width} height={400} margin={{ left: 60 }} onMouseLeave={() => setCrosshair([])}>
-              <HorizontalGridLines style={{ opacity: 0.1 }} />
-              <XAxis title="Date" tickFormat={(tick) => dayjs(tick).format('M/D')} />
-              <YAxis title={yLabel} />
-              <LineSeries data={transformData(positive)} curve="curveBasis" onNearestX={onNearestX} />
-              <LineSeries data={transformData(hospitalized)} curve="curveBasis" />
-              <LineSeries data={transformData(death)} curve="curveBasis" stroke="burlywood" />
-              <Crosshair values={crosshair} />
-            </XYPlot>
-            <DiscreteColorLegend items={['Confirmed Cases', 'Hospitalized', { title: 'Deaths', color: 'burlywood' }]} />
-          </Fragment>
-        ))}
-        {process.env.NODE_ENV !== 'production' && <pre>{JSON.stringify(data, null, 2)}</pre>}
+      <div className="container my-4" ref={containerRef}>
+        {/* Tabs */}
+
+        <Nav tabs>
+          <NavItem>
+            <NavLink className={classnames({ active: activeTab === Tab.US })} onClick={() => setActiveTab(Tab.US)}>
+              US
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink
+              className={classnames({ active: activeTab === Tab.STATES })}
+              onClick={() => setActiveTab(Tab.STATES)}
+            >
+              States
+            </NavLink>
+          </NavItem>
+        </Nav>
+
+        {/* Tab content */}
+
+        <TabContent activeTab={activeTab}>
+          <TabPane tabId={Tab.US}>
+            <Graphs graphs={countryGraphs} width={width} />
+          </TabPane>
+          <TabPane tabId={Tab.STATES}>
+            <FormGroup row className="mt-3">
+              <Label for="selectState" xs="auto">
+                Select state
+              </Label>
+              <Col xs="auto">
+                <Input
+                  type="select"
+                  name="selectState"
+                  id="selectState"
+                  onChange={handleOnChange}
+                  value={selectedState}
+                >
+                  {states.map((state) => (
+                    <option key={state}>{state}</option>
+                  ))}
+                </Input>
+              </Col>
+            </FormGroup>
+            <Graphs graphs={mapDataToGraphs(selectedStateData)} width={width} />
+          </TabPane>
+        </TabContent>
+
+        {process.env.NODE_ENV !== 'production' && (
+          <>
+            <h4>Country data</h4>
+            <pre>{JSON.stringify(countryData, null, 2)}</pre>
+            <h4>State data</h4>
+            <pre>{JSON.stringify(statesData, null, 2)}</pre>
+          </>
+        )}
       </div>
     </div>
   );
 };
 
 export async function getServerSideProps(context) {
-  const data = await fetch('https://covidtracking.com/api/us/daily').then((response) => response.json());
-  const graphs = [
-    {
-      heading: 'Cumulative',
-      subHeading: 'Total number of cases (US)',
-      yLabel: 'Total Cases',
-      positive: data.map(({ dateChecked: x, positive: y }) => ({ x, y })),
-      hospitalized: data.map(({ dateChecked: x, hospitalized: y }) => ({ x, y })),
-      death: data.map(({ dateChecked: x, death: y }) => ({ x, y })),
-    },
-    {
-      heading: 'Day-over-day',
-      subHeading: 'New cases since the previous day (US)',
-      yLabel: 'New Cases',
-      positive: data.map(({ dateChecked: x, positiveIncrease: y }) => ({ x, y })),
-      hospitalized: data.map(({ dateChecked: x, hospitalizedIncrease: y }) => ({ x, y })),
-      death: data.map(({ dateChecked: x, deathIncrease: y }) => ({ x, y })),
-    },
-  ];
+  // Fetch data
+
+  const statesData = await fetch('https://covidtracking.com/api/v1/states/daily.json').then((response) =>
+    response.json()
+  );
+  const countryData = await fetch('https://covidtracking.com/api/us/daily').then((response) => response.json());
+
+  // Grab all the states to display in the dropdown
+
+  const states = new Set();
+
+  statesData.forEach(({ state }) => states.add(state));
+
+  // Get user preferences
+
+  const { state, tab } = parseCookies(context);
 
   return {
     props: {
-      data,
-      graphs,
+      countryData,
+      statesData,
+      countryGraphs: mapDataToGraphs(countryData),
+      states: Array.from(states),
+      preferences: {
+        state,
+        tab,
+      },
     },
   };
 }

@@ -10,8 +10,10 @@
   "dependencies": {
     "bootstrap": "^4.4.1",
     "bootswatch": "^4.4.1",
+    "classnames": "^2.2.6",
     "dayjs": "^1.8.23",
     "node-fetch": "^2.6.0",
+    "nookies": "^2.2.2",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-vis": "^1.11.7",
