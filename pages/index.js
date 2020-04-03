@@ -17,17 +17,17 @@ function mapDataToGraphs(data) {
       heading: 'Cumulative',
       subHeading: `Total number of cases (${data.state || 'US'})`,
       yLabel: 'Total Cases',
-      positive: data.map(({ dateChecked: x, positive: y }) => ({ x, y })),
-      hospitalized: data.map(({ dateChecked: x, hospitalized: y }) => ({ x, y })),
-      death: data.map(({ dateChecked: x, death: y }) => ({ x, y })),
+      positive: data.map(({ dateChecked: x, positive: y = 0 }) => ({ x, y })),
+      hospitalized: data.map(({ dateChecked: x, hospitalizedCumulative: y = 0 }) => ({ x, y })),
+      death: data.map(({ dateChecked: x, death: y = 0 }) => ({ x, y })),
     },
     {
       heading: 'Day-over-day',
       subHeading: `New cases since the previous day (${data.state || 'US'})`,
       yLabel: 'New Cases',
-      positive: data.map(({ dateChecked: x, positiveIncrease: y }) => ({ x, y })),
-      hospitalized: data.map(({ dateChecked: x, hospitalizedIncrease: y }) => ({ x, y })),
-      death: data.map(({ dateChecked: x, deathIncrease: y }) => ({ x, y })),
+      positive: data.map(({ dateChecked: x, positiveIncrease: y = 0 }) => ({ x, y })),
+      hospitalized: data.map(({ dateChecked: x, hospitalizedIncrease: y = 0 }) => ({ x, y })),
+      death: data.map(({ dateChecked: x, deathIncrease: y = 0 }) => ({ x, y })),
     },
   ];
 }
@@ -41,8 +41,8 @@ const Home = ({ countryData, statesData, countryGraphs, states }) => {
   const containerRef = useRef(null);
   const [width, setWidth] = useState(0);
   const [activeTab, setActiveTab] = useState(cookie.get('tab') || Tab.US);
-  const [selectedState, setSelectedState] = useState(cookie.get('state'));
-  const [selectedStateData, setSelectedStateData] = useState();
+  const [selectedState, setSelectedState] = useState(cookie.get('state') || states[0]);
+  const [selectedStateData, setSelectedStateData] = useState(statesData.filter(({ state }) => state === selectedState));
 
   // Resize the graph when the container width changes
 
@@ -75,7 +75,9 @@ const Home = ({ countryData, statesData, countryGraphs, states }) => {
   }, [activeTab]);
 
   function handleOnChange(event) {
-    setSelectedState(event.target.value);
+    if (event.target.value) {
+      setSelectedState(event.target.value);
+    }
   }
 
   return (
