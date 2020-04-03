@@ -3,7 +3,7 @@ import { parseCookies, setCookie } from 'nookies';
 import React, { useEffect, useRef, useState } from 'react';
 import fetch from 'node-fetch';
 import Head from 'next/head';
-import { Col, FormGroup, Input, Label, Nav, Navbar, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
+import { Col, FormGroup, CustomInput, Label, Nav, Navbar, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import Graphs from '../components/Graphs';
 
 function mapDataToGraphs(data) {
@@ -116,7 +116,7 @@ const Home = ({ countryData, statesData, countryGraphs, states, preferences }) =
                 Select state
               </Label>
               <Col xs="auto">
-                <Input
+                <CustomInput
                   type="select"
                   name="selectState"
                   id="selectState"
@@ -126,7 +126,7 @@ const Home = ({ countryData, statesData, countryGraphs, states, preferences }) =
                   {states.map((state) => (
                     <option key={state}>{state}</option>
                   ))}
-                </Input>
+                </CustomInput>
               </Col>
             </FormGroup>
             <Graphs graphs={mapDataToGraphs(selectedStateData)} width={width} />
