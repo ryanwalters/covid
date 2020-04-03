@@ -112,7 +112,7 @@ const Home = ({ countryData, statesData, countryGraphs, states, preferences }) =
           </TabPane>
           <TabPane tabId={Tab.STATES}>
             <FormGroup row className="mt-3">
-              <Label for="selectState" xs="auto">
+              <Label for="selectState" xs="auto" className="pr-0">
                 Select state
               </Label>
               <Col xs="auto">
@@ -162,7 +162,7 @@ export async function getServerSideProps(context) {
 
   // Get user preferences
 
-  const { state, tab } = parseCookies(context);
+  const { state = null, tab = null } = parseCookies(context);
 
   return {
     props: {
