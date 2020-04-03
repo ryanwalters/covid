@@ -1,5 +1,5 @@
 import classnames from 'classnames';
-import cookie from 'js-cookie';
+import { parseCookies, setCookie } from 'nookies';
 import React, { useEffect, useRef, useState } from 'react';
 import fetch from 'node-fetch';
 import Head from 'next/head';
@@ -36,11 +36,11 @@ const Tab = {
   STATES: 'states',
 };
 
-const Home = ({ countryData, statesData, countryGraphs, states }) => {
+const Home = ({ countryData, statesData, countryGraphs, states, preferences }) => {
   const containerRef = useRef(null);
   const [width, setWidth] = useState(0);
-  const [activeTab, setActiveTab] = useState(cookie.get('tab') || Tab.US);
-  const [selectedState, setSelectedState] = useState(cookie.get('state') || states[0]);
+  const [activeTab, setActiveTab] = useState(preferences.tab || Tab.US);
+  const [selectedState, setSelectedState] = useState(preferences.state || states[0]);
   const [selectedStateData, setSelectedStateData] = useState(statesData.filter(({ state }) => state === selectedState));
 
   // Resize the graph when the container width changes
@@ -62,7 +62,7 @@ const Home = ({ countryData, statesData, countryGraphs, states }) => {
   // Save selected state in a cookie
 
   useEffect(() => {
-    cookie.set('state', selectedState);
+    setCookie(null, 'state', selectedState);
 
     setSelectedStateData(statesData.filter(({ state }) => state === selectedState));
   }, [selectedState]);
@@ -70,7 +70,7 @@ const Home = ({ countryData, statesData, countryGraphs, states }) => {
   // Save active tab in cookie
 
   useEffect(() => {
-    cookie.set('tab', activeTab);
+    setCookie(null, 'tab', activeTab);
   }, [activeTab]);
 
   function handleOnChange(event) {
@@ -154,11 +154,15 @@ export async function getServerSideProps(context) {
   );
   const countryData = await fetch('https://covidtracking.com/api/us/daily').then((response) => response.json());
 
-  // Parse individual states
+  // Grab all the states to display in the dropdown
 
   const states = new Set();
 
   statesData.forEach(({ state }) => states.add(state));
+
+  // Get user preferences
+
+  const { state, tab } = parseCookies(context);
 
   return {
     props: {
@@ -166,6 +170,10 @@ export async function getServerSideProps(context) {
       statesData,
       countryGraphs: mapDataToGraphs(countryData),
       states: Array.from(states),
+      preferences: {
+        state,
+        tab,
+      },
     },
   };
 }
