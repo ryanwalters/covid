@@ -1,3 +1,5 @@
+import { faHome } from '@fortawesome/free-solid-svg-icons/faHome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import classnames from 'classnames';
 import { parseCookies, setCookie } from 'nookies';
 import React, { useEffect, useRef, useState } from 'react';
@@ -88,7 +90,12 @@ const Home = ({ countryData, statesData, countryGraphs, states, preferences }) =
       <Head>
         <title>US COVID-19 Cases</title>
       </Head>
-      <Navbar color="dark">US COVID-19 Cases</Navbar>
+      <Navbar color="dark">
+        US COVID-19 Cases
+        <a className="text-light" href="https://ryanwalters.dev">
+          <FontAwesomeIcon icon={faHome} size="lg" />
+        </a>
+      </Navbar>
       <div className="container my-4" ref={containerRef}>
         {/* Tabs */}
 
@@ -116,7 +123,7 @@ const Home = ({ countryData, statesData, countryGraphs, states, preferences }) =
           </TabPane>
           <TabPane tabId={Tab.STATES}>
             <FormGroup row className="mt-3">
-              <Label for="selectState" xs="auto">
+              <Label for="selectState" xs="auto" className="pr-0">
                 Select state
               </Label>
               <Col xs="auto">
@@ -166,7 +173,7 @@ export async function getServerSideProps(context) {
 
   // Get user preferences
 
-  const { state, tab } = parseCookies(context);
+  const { state = null, tab = null } = parseCookies(context);
 
   return {
     props: {
