@@ -48,7 +48,7 @@ const Home = ({ countryData, statesData, countryGraphs, states, preferences }) =
   useEffect(() => {
     let resizeObserver;
 
-    if (containerRef.current) {
+    if (containerRef.current && window.ResizeObserver) {
       resizeObserver = new ResizeObserver(([entry]) => {
         setWidth(entry.contentRect.width);
       });
@@ -56,13 +56,15 @@ const Home = ({ countryData, statesData, countryGraphs, states, preferences }) =
       resizeObserver.observe(containerRef.current);
     }
 
-    return () => resizeObserver.unobserve(containerRef.current);
+    return () => resizeObserver?.unobserve(containerRef.current);
   }, [containerRef.current]);
 
   // Save selected state in a cookie
 
   useEffect(() => {
-    setCookie(null, 'state', selectedState);
+    setCookie(null, 'state', selectedState, {
+      maxAge: 12 * 30 * 24 * 60 * 60,
+    });
 
     setSelectedStateData(statesData.filter(({ state }) => state === selectedState));
   }, [selectedState]);
@@ -70,7 +72,9 @@ const Home = ({ countryData, statesData, countryGraphs, states, preferences }) =
   // Save active tab in cookie
 
   useEffect(() => {
-    setCookie(null, 'tab', activeTab);
+    setCookie(null, 'tab', activeTab, {
+      maxAge: 12 * 30 * 24 * 60 * 60,
+    });
   }, [activeTab]);
 
   function handleOnChange(event) {
