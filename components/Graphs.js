@@ -14,7 +14,7 @@ const Graphs = ({ graphs, width }) => {
     <Fragment key={heading}>
       <h3 className="mt-3">{heading}</h3>
       <div className="font-weight-light">{subHeading}</div>
-      <XYPlot width={width} height={400} margin={{ left: 60 }}>
+      <XYPlot width={width} height={400} margin={{ left: 70 }}>
         <HorizontalGridLines style={{ opacity: 0.1 }} />
         <XAxis title="Date" tickFormat={(tick) => dayjs(tick).format('M/D')} />
         <YAxis title={yLabel} />
