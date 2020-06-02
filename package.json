@@ -10,13 +10,13 @@
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.28",
     "@fortawesome/free-solid-svg-icons": "^5.13.0",
-    "@fortawesome/react-fontawesome": "^0.1.9",
-    "bootstrap": "^4.4.1",
-    "bootswatch": "^4.4.1",
+    "@fortawesome/react-fontawesome": "^0.1.10",
+    "bootstrap": "^4.5.0",
+    "bootswatch": "^4.5.0",
     "classnames": "^2.2.6",
-    "dayjs": "^1.8.26",
+    "dayjs": "^1.8.28",
     "node-fetch": "^2.6.0",
-    "nookies": "^2.2.4",
+    "nookies": "^2.3.0",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-vis": "^1.11.7",
@@ -24,10 +24,10 @@
   },
   "devDependencies": {
     "husky": "^4.2.5",
-    "next": "^9.3.6",
+    "next": "^9.4.4",
     "prettier": "^2.0.5",
     "pretty-quick": "^2.0.1",
-    "sass": "^1.26.5"
+    "sass": "^1.26.7"
   },
   "husky": {
     "hooks": {
