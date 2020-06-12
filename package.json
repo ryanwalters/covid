@@ -16,7 +16,7 @@
     "classnames": "^2.2.6",
     "dayjs": "^1.8.28",
     "node-fetch": "^2.6.0",
-    "nookies": "^2.3.0",
+    "nookies": "^2.3.1",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-vis": "^1.11.7",
@@ -27,7 +27,7 @@
     "next": "^9.4.4",
     "prettier": "^2.0.5",
     "pretty-quick": "^2.0.1",
-    "sass": "^1.26.7"
+    "sass": "^1.26.8"
   },
   "husky": {
     "hooks": {
