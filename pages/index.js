@@ -1,12 +1,24 @@
 import { faHome } from '@fortawesome/free-solid-svg-icons/faHome';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import classnames from 'classnames';
-import { parseCookies, setCookie } from 'nookies';
+import { parseCookies, destroyCookie, setCookie } from 'nookies';
 import React, { useEffect, useRef, useState } from 'react';
 import fetch from 'node-fetch';
 import Head from 'next/head';
 import { Col, FormGroup, CustomInput, Label, Nav, Navbar, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import Graphs from '../components/Graphs';
+
+function setStateCookie(state, ctx = null) {
+  setCookie(ctx, 'state', state, {
+    maxAge: 12 * 30 * 24 * 60 * 60,
+  });
+}
+
+function setTabCookie(tab, ctx = null) {
+  setCookie(ctx, 'tab', tab, {
+    maxAge: 12 * 30 * 24 * 60 * 60,
+  });
+}
 
 function mapDataToGraphs(data) {
   if (!data) {
@@ -38,12 +50,12 @@ const Tab = {
   STATES: 'states',
 };
 
-const Home = ({ countryData, statesData, countryGraphs, states, preferences }) => {
+const Home = ({ countryData, stateData, countryGraphs, states, preferences }) => {
   const containerRef = useRef(null);
   const [width, setWidth] = useState(0);
   const [activeTab, setActiveTab] = useState(preferences.tab || Tab.US);
-  const [selectedState, setSelectedState] = useState(preferences.state || states[0]);
-  const [selectedStateData, setSelectedStateData] = useState(statesData.filter(({ state }) => state === selectedState));
+  const [selectedState, setSelectedState] = useState(preferences.state || state);
+  const [selectedStateData, setSelectedStateData] = useState(stateData);
 
   // Resize the graph when the container width changes
 
@@ -61,22 +73,20 @@ const Home = ({ countryData, statesData, countryGraphs, states, preferences }) =
     return () => resizeObserver?.unobserve(containerRef.current);
   }, [containerRef.current]);
 
-  // Save selected state in a cookie
+  // When selecting a new state, store preference and fetch new data
 
   useEffect(() => {
-    setCookie(null, 'state', selectedState, {
-      maxAge: 12 * 30 * 24 * 60 * 60,
-    });
+    setStateCookie(selectedState);
 
-    setSelectedStateData(statesData.filter(({ state }) => state === selectedState));
+    fetch(`https://covidtracking.com/api/v1/states/${selectedState.toLowerCase()}/daily.json`)
+      .then((response) => response.json())
+      .then((selectedStateData) => setSelectedStateData(selectedStateData));
   }, [selectedState]);
 
   // Save active tab in cookie
 
   useEffect(() => {
-    setCookie(null, 'tab', activeTab, {
-      maxAge: 12 * 30 * 24 * 60 * 60,
-    });
+    setTabCookie(activeTab);
   }, [activeTab]);
 
   function handleOnChange(event) {
@@ -149,7 +159,7 @@ const Home = ({ countryData, statesData, countryGraphs, states, preferences }) =
             <h4>Country data</h4>
             <pre>{JSON.stringify(countryData, null, 2)}</pre>
             <h4>State data</h4>
-            <pre>{JSON.stringify(statesData, null, 2)}</pre>
+            <pre>{JSON.stringify(stateData, null, 2)}</pre>
           </>
         )}
       </div>
@@ -158,9 +168,13 @@ const Home = ({ countryData, statesData, countryGraphs, states, preferences }) =
 };
 
 export async function getServerSideProps(context) {
+  // Get user preferences
+
+  let { state = null, tab = null } = parseCookies(context);
+
   // Fetch data
 
-  const statesData = await fetch('https://covidtracking.com/api/v1/states/daily.json').then((response) =>
+  const statesData = await fetch(`https://covidtracking.com/api/v1/states/daily.json`).then((response) =>
     response.json()
   );
   const countryData = await fetch('https://covidtracking.com/api/us/daily').then((response) => response.json());
@@ -171,14 +185,18 @@ export async function getServerSideProps(context) {
 
   statesData.forEach(({ state }) => states.add(state));
 
-  // Get user preferences
+  // Reset to US tab if an invalid state cookie is set
 
-  const { state = null, tab = null } = parseCookies(context);
+  if (!states.has(state)) {
+    destroyCookie(context, 'state');
+    setTabCookie(Tab.US);
+    tab = Tab.US;
+  }
 
   return {
     props: {
       countryData,
-      statesData,
+      stateData: statesData.filter(({ state: selectedState }) => selectedState === state) ?? [],
       countryGraphs: mapDataToGraphs(countryData),
       states: Array.from(states),
       preferences: {
