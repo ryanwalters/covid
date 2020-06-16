@@ -50,7 +50,7 @@ const Tab = {
   STATES: 'states',
 };
 
-const Home = ({ countryData, stateData, countryGraphs, states, preferences }) => {
+const Home = ({ stateData, countryGraphs, states, preferences }) => {
   const containerRef = useRef(null);
   const [width, setWidth] = useState(0);
   const [activeTab, setActiveTab] = useState(preferences.tab || Tab.US);
@@ -153,15 +153,6 @@ const Home = ({ countryData, stateData, countryGraphs, states, preferences }) =>
             <Graphs graphs={mapDataToGraphs(selectedStateData)} width={width} />
           </TabPane>
         </TabContent>
-
-        {process.env.NODE_ENV !== 'production' && (
-          <>
-            <h4>Country data</h4>
-            <pre>{JSON.stringify(countryData, null, 2)}</pre>
-            <h4>State data</h4>
-            <pre>{JSON.stringify(stateData, null, 2)}</pre>
-          </>
-        )}
       </div>
     </div>
   );
@@ -195,7 +186,6 @@ export async function getServerSideProps(context) {
 
   return {
     props: {
-      countryData,
       stateData: statesData.filter(({ state: selectedState }) => selectedState === state) ?? [],
       countryGraphs: mapDataToGraphs(countryData),
       states: Array.from(states),
