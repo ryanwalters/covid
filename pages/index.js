@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import classnames from 'classnames';
 import { parseCookies, destroyCookie, setCookie } from 'nookies';
 import React, { useEffect, useRef, useState } from 'react';
-import fetch from 'node-fetch';
 import Head from 'next/head';
 import { Col, FormGroup, CustomInput, Label, Nav, Navbar, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import Graphs from '../components/Graphs';
