@@ -53,7 +53,7 @@ const Home = ({ stateData, countryGraphs, states, preferences }) => {
   const containerRef = useRef(null);
   const [width, setWidth] = useState(0);
   const [activeTab, setActiveTab] = useState(preferences.tab || Tab.US);
-  const [selectedState, setSelectedState] = useState(preferences.state || state);
+  const [selectedState, setSelectedState] = useState(preferences.state);
   const [selectedStateData, setSelectedStateData] = useState(stateData);
 
   // Resize the graph when the container width changes
@@ -75,11 +75,13 @@ const Home = ({ stateData, countryGraphs, states, preferences }) => {
   // When selecting a new state, store preference and fetch new data
 
   useEffect(() => {
-    setStateCookie(selectedState);
+    if (selectedStateData) {
+      setStateCookie(selectedState);
 
-    fetch(`https://covidtracking.com/api/v1/states/${selectedState.toLowerCase()}/daily.json`)
-      .then((response) => response.json())
-      .then((selectedStateData) => setSelectedStateData(selectedStateData));
+      fetch(`https://covidtracking.com/api/v1/states/${selectedState.toLowerCase()}/daily.json`)
+        .then((response) => response.json())
+        .then((selectedStateData) => setSelectedStateData(selectedStateData));
+    }
   }, [selectedState]);
 
   // Save active tab in cookie
@@ -158,10 +160,6 @@ const Home = ({ stateData, countryGraphs, states, preferences }) => {
 };
 
 export async function getServerSideProps(context) {
-  // Get user preferences
-
-  let { state = null, tab = null } = parseCookies(context);
-
   // Fetch data
 
   const statesData = await fetch(`https://covidtracking.com/api/v1/states/daily.json`).then((response) =>
@@ -175,19 +173,17 @@ export async function getServerSideProps(context) {
 
   statesData.forEach(({ state }) => states.add(state));
 
-  // Reset to US tab if an invalid state cookie is set
+  const statesArray = Array.from(states);
 
-  if (!states.has(state)) {
-    destroyCookie(context, 'state');
-    setTabCookie(Tab.US);
-    tab = Tab.US;
-  }
+  // Get user preferences, setting the defaults if they're not already set
+
+  let { state = statesArray[0], tab = Tab.US } = parseCookies(context);
 
   return {
     props: {
       stateData: statesData.filter(({ state: selectedState }) => selectedState === state) ?? [],
       countryGraphs: mapDataToGraphs(countryData),
-      states: Array.from(states),
+      states: statesArray,
       preferences: {
         state,
         tab,
