@@ -24,25 +24,28 @@ function mapDataToGraphs(data) {
     return [];
   }
 
-  const { totalTestResultsIncrease, positiveIncrease } = data[0];
+  console.log(data[0]);
+
+  const { totalTestResultsIncrease, positiveIncrease, lastUpdateEt } = data[0];
 
   return [
     {
       heading: 'Cumulative',
       subHeading: `Total number of cases (${data[0].state || 'US'})`,
       yLabel: 'Total Cases',
-      positive: data.map(({ dateChecked: x, positive: y = 0 }) => ({ x, y })),
-      hospitalized: data.map(({ dateChecked: x, hospitalizedCumulative: y = 0 }) => ({ x, y })),
-      death: data.map(({ dateChecked: x, death: y = 0 }) => ({ x, y })),
+      positive: data.map(({ lastUpdateEt: x, positive: y = 0 }) => ({ x, y })),
+      hospitalized: data.map(({ lastUpdateEt: x, hospitalizedCumulative: y = 0 }) => ({ x, y })),
+      death: data.map(({ lastUpdateEt: x, death: y = 0 }) => ({ x, y })),
     },
     {
       heading: 'Day-over-day',
       subHeading: `New cases since the previous day (${data[0].state || 'US'})`,
       yLabel: 'New Cases',
-      positive: data.map(({ dateChecked: x, positiveIncrease: y = 0 }) => ({ x, y })),
-      hospitalized: data.map(({ dateChecked: x, hospitalizedIncrease: y = 0 }) => ({ x, y })),
-      death: data.map(({ dateChecked: x, deathIncrease: y = 0 }) => ({ x, y })),
+      positive: data.map(({ lastUpdateEt: x, positiveIncrease: y = 0 }) => ({ x, y })),
+      hospitalized: data.map(({ lastUpdateEt: x, hospitalizedIncrease: y = 0 }) => ({ x, y })),
+      death: data.map(({ lastUpdateEt: x, deathIncrease: y = 0 }) => ({ x, y })),
       positivityRate: positiveIncrease / totalTestResultsIncrease,
+      lastUpdateEt,
     },
   ];
 }
@@ -81,7 +84,7 @@ const Home = ({ stateData, countryGraphs, states, preferences }) => {
     if (selectedStateData) {
       setStateCookie(selectedState);
 
-      fetch(`https://covidtracking.com/api/v1/states/${selectedState.toLowerCase()}/daily.json`)
+      fetch(`https://api.covidtracking.com/v1/states/${selectedState.toLowerCase()}/daily.json`)
         .then((response) => response.json())
         .then((selectedStateData) => setSelectedStateData(selectedStateData));
     }
@@ -172,10 +175,10 @@ const Home = ({ stateData, countryGraphs, states, preferences }) => {
 export async function getServerSideProps(context) {
   // Fetch data
 
-  const statesData = await fetch(`https://covidtracking.com/api/v1/states/daily.json`).then((response) =>
+  const statesData = await fetch(`https://api.covidtracking.com/v1/states/daily.json`).then((response) =>
     response.json()
   );
-  const countryData = await fetch('https://covidtracking.com/api/us/daily').then((response) => response.json());
+  const countryData = await fetch('https://api.covidtracking.com/v1/us/daily.json').then((response) => response.json());
 
   // Grab all the states to display in the dropdown
 
