@@ -162,14 +162,14 @@ const Home = ({ stateData, countryGraphs, states, preferences }) => {
   );
 };
 
-export async function getStaticPaths() {
+/*export async function getStaticPaths() {
   return {
     paths: [],
     fallback: true,
   };
-}
+}*/
 
-export async function getStaticProps(context) {
+export async function getServerSideProps(context) {
   // Fetch data
 
   const statesData = await fetch(`https://covidtracking.com/api/v1/states/daily.json`).then((response) =>
@@ -190,7 +190,7 @@ export async function getStaticProps(context) {
   let { state = statesArray[0], tab = Tab.US } = parseCookies(context);
 
   return {
-    revalidate: 100,
+    //revalidate: 100,
     props: {
       stateData: statesData.filter(({ state: selectedState }) => selectedState === state) ?? [],
       countryGraphs: mapDataToGraphs(countryData),
