@@ -27,7 +27,6 @@ class MyDocument extends Document {
             gtag('config', 'UA-998540-9');`,
             }}
           />
-          <script data-ad-client="ca-pub-5242524909426428" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" />
         </Head>
         <body>
           <Main />
