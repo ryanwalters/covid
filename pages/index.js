@@ -20,8 +20,6 @@ function setTabCookie(tab, ctx = null) {
 }
 
 function mapDataToGraphs(data) {
-  console.log(data.map(({ dateChecked: x, positive: y = 0 }) => ({ x, y })));
-
   if (!data) {
     return [];
   }
