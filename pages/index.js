@@ -20,32 +20,32 @@ function setTabCookie(tab, ctx = null) {
 }
 
 function mapDataToGraphs(data) {
+  console.log(data.map(({ dateChecked: x, positive: y = 0 }) => ({ x, y })));
+
   if (!data) {
     return [];
   }
 
-  console.log(data[0]);
-
-  const { totalTestResultsIncrease, positiveIncrease, lastUpdateEt } = data[0];
+  const { totalTestResultsIncrease, positiveIncrease, dateChecked } = data[0];
 
   return [
     {
       heading: 'Cumulative',
       subHeading: `Total number of cases (${data[0].state || 'US'})`,
       yLabel: 'Total Cases',
-      positive: data.map(({ lastUpdateEt: x, positive: y = 0 }) => ({ x, y })),
-      hospitalized: data.map(({ lastUpdateEt: x, hospitalizedCumulative: y = 0 }) => ({ x, y })),
-      death: data.map(({ lastUpdateEt: x, death: y = 0 }) => ({ x, y })),
+      positive: data.map(({ dateChecked: x, positive: y = 0 }) => ({ x, y })),
+      hospitalized: data.map(({ dateChecked: x, hospitalizedCumulative: y = 0 }) => ({ x, y })),
+      death: data.map(({ dateChecked: x, death: y = 0 }) => ({ x, y })),
     },
     {
       heading: 'Day-over-day',
       subHeading: `New cases since the previous day (${data[0].state || 'US'})`,
       yLabel: 'New Cases',
-      positive: data.map(({ lastUpdateEt: x, positiveIncrease: y = 0 }) => ({ x, y })),
-      hospitalized: data.map(({ lastUpdateEt: x, hospitalizedIncrease: y = 0 }) => ({ x, y })),
-      death: data.map(({ lastUpdateEt: x, deathIncrease: y = 0 }) => ({ x, y })),
+      positive: data.map(({ dateChecked: x, positiveIncrease: y = 0 }) => ({ x, y })),
+      hospitalized: data.map(({ dateChecked: x, hospitalizedIncrease: y = 0 }) => ({ x, y })),
+      death: data.map(({ dateChecked: x, deathIncrease: y = 0 }) => ({ x, y })),
       positivityRate: positiveIncrease / totalTestResultsIncrease,
-      lastUpdateEt,
+      dateChecked,
     },
   ];
 }
