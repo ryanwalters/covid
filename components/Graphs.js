@@ -10,12 +10,12 @@ const Graphs = ({ graphs, width }) => {
     }));
   }
 
-  return graphs.map(({ heading, subHeading, yLabel, positive, hospitalized, death, positivityRate, lastUpdateEt }) => (
+  return graphs.map(({ heading, subHeading, yLabel, positive, hospitalized, death, positivityRate, dateChecked }) => (
     <Fragment key={heading}>
       <h3 className="mt-3">{heading}</h3>
-      {positivityRate && lastUpdateEt && (
+      {positivityRate && dateChecked && (
         <div className="font-weight-light">
-          Positivity rate for {dayjs(lastUpdateEt).format('M/D')}: {`${parseFloat(positivityRate * 100).toFixed(2)}%`}
+          Positivity rate for {dayjs(dateChecked).format('M/D')}: {`${parseFloat(positivityRate * 100).toFixed(2)}%`}
         </div>
       )}
       <div className="font-weight-light">{subHeading}</div>
