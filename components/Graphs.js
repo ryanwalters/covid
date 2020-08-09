@@ -10,9 +10,14 @@ const Graphs = ({ graphs, width }) => {
     }));
   }
 
-  return graphs.map(({ heading, subHeading, yLabel, positive, hospitalized, death }) => (
+  return graphs.map(({ heading, subHeading, yLabel, positive, hospitalized, death, positivityRate }) => (
     <Fragment key={heading}>
       <h3 className="mt-3">{heading}</h3>
+      {positivityRate && (
+        <div className="font-weight-light">
+          Positivity rate for {dayjs().format('M/D')}: {`${parseFloat(positivityRate * 100).toFixed(2)}%`}
+        </div>
+      )}
       <div className="font-weight-light">{subHeading}</div>
       <XYPlot width={width} height={400} margin={{ left: 70 }}>
         <HorizontalGridLines style={{ opacity: 0.1 }} />

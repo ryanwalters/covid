@@ -24,6 +24,8 @@ function mapDataToGraphs(data) {
     return [];
   }
 
+  const { totalTestResultsIncrease, positiveIncrease } = data[0];
+
   return [
     {
       heading: 'Cumulative',
@@ -40,6 +42,7 @@ function mapDataToGraphs(data) {
       positive: data.map(({ dateChecked: x, positiveIncrease: y = 0 }) => ({ x, y })),
       hospitalized: data.map(({ dateChecked: x, hospitalizedIncrease: y = 0 }) => ({ x, y })),
       death: data.map(({ dateChecked: x, deathIncrease: y = 0 }) => ({ x, y })),
+      positivityRate: positiveIncrease / totalTestResultsIncrease,
     },
   ];
 }
@@ -159,7 +162,14 @@ const Home = ({ stateData, countryGraphs, states, preferences }) => {
   );
 };
 
-export async function getServerSideProps(context) {
+export async function getStaticPaths() {
+  return {
+    paths: [],
+    fallback: true,
+  };
+}
+
+export async function getStaticProps(context) {
   // Fetch data
 
   const statesData = await fetch(`https://covidtracking.com/api/v1/states/daily.json`).then((response) =>
@@ -180,6 +190,7 @@ export async function getServerSideProps(context) {
   let { state = statesArray[0], tab = Tab.US } = parseCookies(context);
 
   return {
+    revalidate: 100,
     props: {
       stateData: statesData.filter(({ state: selectedState }) => selectedState === state) ?? [],
       countryGraphs: mapDataToGraphs(countryData),
