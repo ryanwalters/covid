@@ -183,7 +183,7 @@ const Home = ({ stateData, countryGraphs, states, preferences }) => {
   };
 }*/
 
-export async function getStaticProps(context) {
+export async function getServerSideProps(context) {
   // Fetch data
 
   const statesData = await fetch(`https://api.covidtracking.com/v1/states/daily.json`).then((response) =>
@@ -204,7 +204,7 @@ export async function getStaticProps(context) {
   let { state = statesArray[0], tab = Tab.US } = parseCookies(context);
 
   return {
-    revalidate: 3600,
+    //revalidate: 3600,
     props: {
       stateData: statesData.filter(({ state: selectedState }) => selectedState === state) ?? [],
       countryGraphs: mapDataToGraphs(countryData),

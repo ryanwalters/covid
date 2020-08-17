@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import classnames from 'classnames';
 import dayjs from 'dayjs';
 import React, { Fragment } from 'react';
-import { Crosshair, DiscreteColorLegend, HorizontalGridLines, LineSeries, XAxis, XYPlot, YAxis } from 'react-vis';
+import { DiscreteColorLegend, HorizontalGridLines, LineSeries, XAxis, XYPlot, YAxis } from 'react-vis';
 import { UncontrolledTooltip } from 'reactstrap';
 
 const Graphs = ({ graphs, width }) => {
