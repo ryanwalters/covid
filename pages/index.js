@@ -24,7 +24,19 @@ function mapDataToGraphs(data) {
     return [];
   }
 
+  // Daily
+
   const { totalTestResultsIncrease, positiveIncrease, dateChecked } = data[0];
+
+  // 2-week
+
+  let testResultsIncrease2Week = 0;
+  let positiveIncrease2Week = 0;
+
+  data.slice(0, 14).forEach(({ totalTestResultsIncrease, positiveIncrease }) => {
+    testResultsIncrease2Week += totalTestResultsIncrease;
+    positiveIncrease2Week += positiveIncrease;
+  });
 
   return [
     {
@@ -42,7 +54,8 @@ function mapDataToGraphs(data) {
       positive: data.map(({ dateChecked: x, positiveIncrease: y = 0 }) => ({ x, y })),
       hospitalized: data.map(({ dateChecked: x, hospitalizedIncrease: y = 0 }) => ({ x, y })),
       death: data.map(({ dateChecked: x, deathIncrease: y = 0 }) => ({ x, y })),
-      positivityRate: positiveIncrease / totalTestResultsIncrease,
+      positivityRate2Week: positiveIncrease2Week / testResultsIncrease2Week,
+      positivityRateDaily: positiveIncrease / totalTestResultsIncrease,
       dateChecked,
     },
   ];
@@ -170,7 +183,7 @@ const Home = ({ stateData, countryGraphs, states, preferences }) => {
   };
 }*/
 
-export async function getServerSideProps(context) {
+export async function getStaticProps(context) {
   // Fetch data
 
   const statesData = await fetch(`https://api.covidtracking.com/v1/states/daily.json`).then((response) =>
@@ -191,7 +204,7 @@ export async function getServerSideProps(context) {
   let { state = statesArray[0], tab = Tab.US } = parseCookies(context);
 
   return {
-    //revalidate: 100,
+    revalidate: 3600,
     props: {
       stateData: statesData.filter(({ state: selectedState }) => selectedState === state) ?? [],
       countryGraphs: mapDataToGraphs(countryData),
