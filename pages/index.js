@@ -40,14 +40,6 @@ function mapDataToGraphs(data) {
 
   return [
     {
-      heading: 'Cumulative',
-      subHeading: `Total number of cases (${data[0].state || 'US'})`,
-      yLabel: 'Total Cases',
-      positive: data.map(({ dateChecked: x, positive: y = 0 }) => ({ x, y })),
-      hospitalized: data.map(({ dateChecked: x, hospitalizedCumulative: y = 0 }) => ({ x, y })),
-      death: data.map(({ dateChecked: x, death: y = 0 }) => ({ x, y })),
-    },
-    {
       heading: 'Day-over-day',
       subHeading: `New cases since the previous day (${data[0].state || 'US'})`,
       yLabel: 'New Cases',
@@ -57,6 +49,14 @@ function mapDataToGraphs(data) {
       positivityRate2Week: positiveIncrease2Week / testResultsIncrease2Week,
       positivityRateDaily: positiveIncrease / totalTestResultsIncrease,
       dateChecked,
+    },
+    {
+      heading: 'Cumulative',
+      subHeading: `Total number of cases (${data[0].state || 'US'})`,
+      yLabel: 'Total Cases',
+      positive: data.map(({ dateChecked: x, positive: y = 0 }) => ({ x, y })),
+      hospitalized: data.map(({ dateChecked: x, hospitalizedCumulative: y = 0 }) => ({ x, y })),
+      death: data.map(({ dateChecked: x, death: y = 0 }) => ({ x, y })),
     },
   ];
 }
