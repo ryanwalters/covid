@@ -8,25 +8,25 @@
     "start": "next start"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.30",
-    "@fortawesome/free-solid-svg-icons": "^5.14.0",
+    "@fortawesome/fontawesome-svg-core": "^1.2.31",
+    "@fortawesome/free-solid-svg-icons": "^5.15.0",
     "@fortawesome/react-fontawesome": "^0.1.11",
     "bootstrap": "^4.5.2",
-    "bootswatch": "^4.5.1",
+    "bootswatch": "^4.5.2",
     "classnames": "^2.2.6",
-    "dayjs": "^1.8.32",
+    "dayjs": "^1.9.1",
     "nookies": "^2.4.0",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-vis": "^1.11.7",
-    "reactstrap": "^8.5.1"
+    "reactstrap": "^8.6.0"
   },
   "devDependencies": {
-    "husky": "^4.2.5",
-    "next": "^9.5.1",
-    "prettier": "^2.0.5",
-    "pretty-quick": "^2.0.1",
-    "sass": "^1.26.10"
+    "husky": "^4.3.0",
+    "next": "^9.5.3",
+    "prettier": "^2.1.2",
+    "pretty-quick": "^2.0.2",
+    "sass": "^1.26.11"
   },
   "husky": {
     "hooks": {
