@@ -20,14 +20,14 @@ function setTabCookie(tab) {
   });
 }
 
-function mapDataToGraphs(data) {
+function mapDataToGraphs(data, dateField = 'lastUpdateEt') {
   if (!data) {
     return [];
   }
 
   // Daily
 
-  const { totalTestResultsIncrease, positiveIncrease, lastUpdateEt = null } = data[0];
+  const { totalTestResultsIncrease, positiveIncrease, lastUpdateEt, dateChecked } = data[0];
 
   // 2-week
 
@@ -44,20 +44,20 @@ function mapDataToGraphs(data) {
       heading: 'Day-over-day',
       subHeading: `New cases since the previous day (${data[0].state || 'US'})`,
       yLabel: 'New Cases',
-      positive: data.map(({ lastUpdateEt: x = null, positiveIncrease: y = 0 }) => ({ x, y })),
-      hospitalized: data.map(({ lastUpdateEt: x = null, hospitalizedCurrently: y = 0 }) => ({ x, y })),
-      death: data.map(({ lastUpdateEt: x = null, deathIncrease: y = 0 }) => ({ x, y })),
+      positive: data.map(({ [dateField]: x, positiveIncrease: y = 0 }) => ({ x, y })),
+      hospitalized: data.map(({ [dateField]: x, hospitalizedCurrently: y = 0 }) => ({ x, y })),
+      death: data.map(({ [dateField]: x, deathIncrease: y = 0 }) => ({ x, y })),
       positivityRate2Week: positiveIncrease2Week / testResultsIncrease2Week,
       positivityRateDaily: positiveIncrease / totalTestResultsIncrease,
-      lastUpdateEt,
+      lastUpdateEt: lastUpdateEt ?? dateChecked,
     },
     {
       heading: 'Cumulative',
       subHeading: `Total number of cases (${data[0].state || 'US'})`,
       yLabel: 'Total Cases',
-      positive: data.map(({ lastUpdateEt: x = null, positive: y = 0 }) => ({ x, y })),
-      hospitalized: data.map(({ lastUpdateEt: x = null, hospitalizedCumulative: y = 0 }) => ({ x, y })),
-      death: data.map(({ lastUpdateEt: x = null, death: y = 0 }) => ({ x, y })),
+      positive: data.map(({ [dateField]: x, positive: y = 0 }) => ({ x, y })),
+      hospitalized: data.map(({ [dateField]: x, hospitalizedCumulative: y = 0 }) => ({ x, y })),
+      death: data.map(({ [dateField]: x, death: y = 0 }) => ({ x, y })),
     },
   ];
 }
@@ -199,7 +199,7 @@ export async function getStaticProps() {
   return {
     revalidate: 3600,
     props: {
-      countryGraphs: mapDataToGraphs(countryData),
+      countryGraphs: mapDataToGraphs(countryData, 'dateChecked'),
       states: statesArray,
     },
   };
