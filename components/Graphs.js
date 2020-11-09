@@ -24,7 +24,7 @@ const Graphs = ({ graphs, width }) => {
       death,
       positivityRateDaily,
       positivityRate2Week,
-      dateChecked,
+      lastUpdateEt,
     }) => {
       const positivityPercentage2Week = parseFloat(positivityRate2Week * 100).toFixed(2);
       const positivityPercentageDaily = parseFloat(positivityRateDaily * 100).toFixed(2);
@@ -39,9 +39,9 @@ const Graphs = ({ graphs, width }) => {
               <UncontrolledTooltip target="positivityQuestion">WHO recommends 5% or lower</UncontrolledTooltip>
             </div>
           )}
-          {positivityRateDaily && dateChecked && (
+          {positivityRateDaily && lastUpdateEt && (
             <div>
-              &mdash; Daily ({dayjs(dateChecked).format('MMM D')}):
+              &mdash; Daily ({dayjs(lastUpdateEt).format('MMM D')}):
               <span
                 className={classnames(
                   'lead font-weight-bold ml-1 d-inline-flex align-items-center',
@@ -52,7 +52,7 @@ const Graphs = ({ graphs, width }) => {
               </span>
             </div>
           )}
-          {positivityRate2Week && dateChecked && (
+          {positivityRate2Week && lastUpdateEt && (
             <div>
               &mdash; 2-week:
               <span

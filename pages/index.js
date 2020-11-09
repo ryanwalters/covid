@@ -25,9 +25,11 @@ function mapDataToGraphs(data) {
     return [];
   }
 
+  data.forEach(({ positiveIncrease }) => console.log(positiveIncrease));
+
   // Daily
 
-  const { totalTestResultsIncrease, positiveIncrease, dateChecked } = data[0];
+  const { totalTestResultsIncrease, positiveIncrease, lastUpdateEt } = data[0];
 
   // 2-week
 
@@ -44,20 +46,20 @@ function mapDataToGraphs(data) {
       heading: 'Day-over-day',
       subHeading: `New cases since the previous day (${data[0].state || 'US'})`,
       yLabel: 'New Cases',
-      positive: data.map(({ dateChecked: x, positiveIncrease: y = 0 }) => ({ x, y })),
-      hospitalized: data.map(({ dateChecked: x, hospitalizedIncrease: y = 0 }) => ({ x, y })),
-      death: data.map(({ dateChecked: x, deathIncrease: y = 0 }) => ({ x, y })),
+      positive: data.map(({ lastUpdateEt: x, positiveIncrease: y = 0 }) => ({ x, y })),
+      hospitalized: data.map(({ lastUpdateEt: x, hospitalizedCurrently: y = 0 }) => ({ x, y })),
+      death: data.map(({ lastUpdateEt: x, deathIncrease: y = 0 }) => ({ x, y })),
       positivityRate2Week: positiveIncrease2Week / testResultsIncrease2Week,
       positivityRateDaily: positiveIncrease / totalTestResultsIncrease,
-      dateChecked,
+      lastUpdateEt,
     },
     {
       heading: 'Cumulative',
       subHeading: `Total number of cases (${data[0].state || 'US'})`,
       yLabel: 'Total Cases',
-      positive: data.map(({ dateChecked: x, positive: y = 0 }) => ({ x, y })),
-      hospitalized: data.map(({ dateChecked: x, hospitalizedCumulative: y = 0 }) => ({ x, y })),
-      death: data.map(({ dateChecked: x, death: y = 0 }) => ({ x, y })),
+      positive: data.map(({ lastUpdateEt: x, positive: y = 0 }) => ({ x, y })),
+      hospitalized: data.map(({ lastUpdateEt: x, hospitalizedCumulative: y = 0 }) => ({ x, y })),
+      death: data.map(({ lastUpdateEt: x, death: y = 0 }) => ({ x, y })),
     },
   ];
 }
@@ -100,7 +102,10 @@ const Home = ({ countryGraphs, states }) => {
 
     fetch(`https://api.covidtracking.com/v1/states/${selectedState.toLowerCase()}/daily.json`)
       .then((response) => response.json())
-      .then((selectedStateData) => setSelectedStateData(selectedStateData));
+      .then((selectedStateData) => {
+        console.log(selectedStateData);
+        setSelectedStateData(selectedStateData);
+      });
   }, [selectedState]);
 
   // Save active tab in cookie
