@@ -25,8 +25,6 @@ function mapDataToGraphs(data) {
     return [];
   }
 
-  data.forEach(({ positiveIncrease }) => console.log(positiveIncrease));
-
   // Daily
 
   const { totalTestResultsIncrease, positiveIncrease, lastUpdateEt } = data[0];
@@ -102,10 +100,7 @@ const Home = ({ countryGraphs, states }) => {
 
     fetch(`https://api.covidtracking.com/v1/states/${selectedState.toLowerCase()}/daily.json`)
       .then((response) => response.json())
-      .then((selectedStateData) => {
-        console.log(selectedStateData);
-        setSelectedStateData(selectedStateData);
-      });
+      .then((selectedStateData) => setSelectedStateData(selectedStateData));
   }, [selectedState]);
 
   // Save active tab in cookie
