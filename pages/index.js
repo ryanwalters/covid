@@ -27,7 +27,7 @@ function mapDataToGraphs(data) {
 
   // Daily
 
-  const { totalTestResultsIncrease, positiveIncrease, lastUpdateEt } = data[0];
+  const { totalTestResultsIncrease, positiveIncrease, lastUpdateEt = null } = data[0];
 
   // 2-week
 
