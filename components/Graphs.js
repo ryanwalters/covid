@@ -66,7 +66,7 @@ const Graphs = ({ graphs, width }) => {
             </div>
           )}
           <div className="font-weight-light mt-2">{subHeading}</div>
-          <XYPlot width={width} height={400} margin={{ left: 70 }}>
+          <XYPlot width={width} height={400} margin={{ left: 75 }}>
             <HorizontalGridLines style={{ opacity: 0.1 }} />
             <XAxis title="Date" tickFormat={(tick) => dayjs(tick).format('M/D')} />
             <YAxis title={yLabel} />
